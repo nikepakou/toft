@@ -50,6 +50,7 @@ public:
     ClassRegistry() {}
     ~ClassRegistry() {}
 
+    // TODO：此处为什么用reinterpret_cast，而不用static_cast代替？？？
     void AddClass(const std::string& entry_name, ObjectGetter getter) {
         DoAddClass(entry_name, reinterpret_cast<GetFunction>(getter));
     }
@@ -82,6 +83,7 @@ public:
 
 // TOFT_CLASS_REGISTRY_DEFINE Make a unique type for a given registry_name.
 // This class is the base of the generated unique type
+// 为给定的注册表名创建唯一的类型。此类是生成唯一类型的基础
 template <typename BaseClassName>
 struct ClassRegistryTagBase {
     typedef BaseClassName BaseClass;
@@ -104,12 +106,14 @@ typename RegistryTag::RegistryType& ClassRegistryInstance() {
 }
 
 // All class can share the same creator as a function template
+// 所有类都可以作为函数模板共享同一个创建者
 template <typename BaseClassName, typename SubClassName>
 BaseClassName* ClassRegistry_NewObject() {
     return new SubClassName();
 }
 
 // Used to register a given class into given registry
+// 用于将给定类注册到给定注册表中
 template <typename RegistryTag>
 class ClassRegisterer {
     typedef typename RegistryTag::BaseClass BaseClassName;
@@ -153,10 +157,14 @@ typename RegistryTag::BaseClass* ClassRegistry_GetSingleton() {
 //
 // These macros should be used in the same namespace as class_name, and
 // class_name should not be namespace prefixed.
+// 这些宏应该与class_name在同一名称空间中使用，并且类名称不应以空间名称为前缀。
 //
 // But namespace prefix is required for registry_name and base_class_name if
 // they are defined in different namespace, for example, ::toft::File
+// 但是如果注册表名和基类名是在不同的命名空间中定义的，则它们需要命名空间前缀
 //
+// 实际上执行的是ClassRegisterer构造函数
+// 其中 TOFT_PP_JOIN(g_object_creator_registry_##class_name, __LINE__) 是对象名称
 #define TOFT_CLASS_REGISTRY_REGISTER_CLASS(registry_name, \
                                            base_class_name, \
                                            entry_name_as_string, \
