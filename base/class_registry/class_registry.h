@@ -19,6 +19,8 @@ namespace toft {
 // To be used internally as base of ClassRegistry to reduce code bloating.
 class ClassRegistryBase {
 protected:
+    // GetFunction: 函数指针，指向的函数不需要形参，并返回void*类型
+    // void* : 任何非常量对象的地址都能存入void*
     typedef void* (*GetFunction)();
 
 protected:
@@ -50,12 +52,14 @@ public:
     ClassRegistry() {}
     ~ClassRegistry() {}
 
-    // TODO：此处为什么用reinterpret_cast，而不用static_cast代替？？？
+    // reinterpret_cast这个操作符的转换几乎总是与编译平台息息相关，所以reinterpret_cast不具备移植性！
     void AddClass(const std::string& entry_name, ObjectGetter getter) {
+        // 将原类型函数指针对象转换为void*对象
         DoAddClass(entry_name, reinterpret_cast<GetFunction>(getter));
     }
 
     BaseClassName* CreateObject(const std::string& entry_name) const {
+        // 将void*对象转换为原类型指针对象
         return static_cast<BaseClassName*>(DoGetObject(entry_name));
     }
 };
