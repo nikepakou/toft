@@ -96,6 +96,7 @@ public:
     }
 };
 
+// 局部锁，将资源放到对象中管理，作用域结束，锁被释放
 typedef ScopedLocker<internal::MutexBase> MutexLocker;
 
 // Check ing missing variable name, eg MutexLocker(m_lock);

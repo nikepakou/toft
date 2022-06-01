@@ -10,13 +10,13 @@
 // while the read is in progress.  Apart from that, reads progress
 // without any internal locking or synchronization.
 //
-// Invariants:
+// Invariants:(不变性)
 //
 // (1) Allocated nodes are never deleted until the SkipList is
 // destroyed.  This is trivially guaranteed by the code since we
 // never delete any skip list nodes.
 //
-// (2) The contents of a Node except for the next/prev pointers are
+// (2) The contents of a Node except for(除了) the next/prev pointers are
 // immutable after the Node has been linked into the SkipList.
 // Only Insert() modifies the list, and it is careful to initialize
 // a node and use release-stores to publish the nodes in one or
@@ -38,6 +38,8 @@
 
 namespace toft {
 
+// 原子指针操作类, 用内存屏障实现
+// 内存屏障的介绍参考 doc/lecture13-memory-barriers.pdf
 class AtomicPointer {
 private:
     void* rep_;
@@ -67,6 +69,7 @@ public:
 
 class Arena;
 
+// 将二分查找的中间结点记录到不同的Level中，用额外的空间换取了时间，避免普通链表从头逐次遍历
 template<typename Key, class Comparator>
 class SkipList {
 private:

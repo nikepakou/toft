@@ -52,7 +52,8 @@ public:
     ClassRegistry() {}
     ~ClassRegistry() {}
 
-    // reinterpret_cast这个操作符的转换几乎总是与编译平台息息相关，所以reinterpret_cast不具备移植性！
+    // reinterpret_cast 适合于函数指针的转化 《more effective c++》.2
+    // 换成static_cast 编译不过 
     void AddClass(const std::string& entry_name, ObjectGetter getter) {
         // 将原类型函数指针对象转换为void*对象
         DoAddClass(entry_name, reinterpret_cast<GetFunction>(getter));
@@ -146,6 +147,7 @@ typename RegistryTag::BaseClass* ClassRegistry_GetSingleton() {
 // registry_name.
 //
 // This macro should be used in the same namespace as base_class_name.
+// 此宏应与base_class_name在同一命名空间中使用
 #define TOFT_CLASS_REGISTRY_DEFINE(registry_name, base_class_name) \
     struct registry_name##RegistryTag: \
         public ::toft::ClassRegistryTagBase<base_class_name> {};
