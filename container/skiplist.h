@@ -70,6 +70,7 @@ public:
 class Arena;
 
 // 将二分查找的中间结点记录到不同的Level中，用额外的空间换取了时间，避免普通链表从头逐次遍历
+// 参考文献：doc/Skip Lists- A Probabilistic Alternative to Balanced Trees.pdf
 template<typename Key, class Comparator>
 class SkipList {
 private:
